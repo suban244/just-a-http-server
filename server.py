@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+import os
+import uvicorn
 
 app = FastAPI()
 menu = [
@@ -35,3 +37,7 @@ async def order_bulk(items: list):
             if i["item"] == item:
                 total += i["price"]
     return {"items":items, "total": total, "payment": "cash on delivery"}
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 10000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
