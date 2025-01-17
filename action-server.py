@@ -62,6 +62,10 @@ class WebhookEvent(BaseModel):
 
 app = FastAPI()
 
+@app.get("/")
+async def read_root():
+    return {"name": "Action Server"}
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}

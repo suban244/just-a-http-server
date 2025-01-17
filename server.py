@@ -4,6 +4,11 @@ import uvicorn
 
 app = FastAPI()
 
+@app.get("/")
+async def read_root():
+    return {"name": "HTTP Server"}
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
