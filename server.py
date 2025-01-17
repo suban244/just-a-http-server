@@ -3,6 +3,11 @@ import os
 import uvicorn
 
 app = FastAPI()
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 menu = [
     {"item": "pizza", "price": 10},
     {"item": "burger", "price": 5},
