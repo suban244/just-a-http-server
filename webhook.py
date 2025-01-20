@@ -1,6 +1,4 @@
-from fastapi import FastAPI
-import os
-import uvicorn
+from fastapi.routing import APIRouter
 from pydantic import BaseModel
 import pystache
 import httpx
@@ -60,15 +58,7 @@ class WebhookEvent(BaseModel):
     data: WebhookData
 
 
-app = FastAPI()
-
-@app.get("/")
-async def read_root():
-    return {"name": "Action Server"}
-
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
+router = APIRouter()
 
 async def do_http_call(action: HttpAction, params: dict):
     # Do http call here
@@ -104,7 +94,7 @@ async def do_http_call(action: HttpAction, params: dict):
             response = {}
     return action
 
-@app.get(path="/webhooks")
+@router.post(path="/")
 async def webhooks(event: WebhookEvent):
     match event:
         case ActionWebhookData():
@@ -112,7 +102,3 @@ async def webhooks(event: WebhookEvent):
                 case HttpAction():
                     return do_http_call(action=event.action, params=event.params)
     
-
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 10000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
