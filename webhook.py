@@ -60,7 +60,7 @@ class WebhookEvent(BaseModel):
 class WebhookResponse(BaseModel):
     status: Literal["OK", "ERROR"]
     message: str | None = None
-    data: dict | None = None
+    data: dict | list | None = None
     slots: dict | None = None
 
 router = APIRouter()
