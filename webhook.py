@@ -98,11 +98,11 @@ async def do_http_call(action: HttpAction, params: dict) -> WebhookResponse:
 
 @router.post(path="/")
 async def webhooks(event: WebhookEvent) -> WebhookResponse:
-    match event:
+    match event.data:
         case ActionWebhookData():
-            match event.action:
+            match event.data.action:
                 case HttpAction():
-                    return do_http_call(action=event.action, params=event.params)
+                    return await do_http_call(action=event.data.action, params=event.data.params)
     
     return WebhookResponse(status="ERROR")
     
