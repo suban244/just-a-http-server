@@ -6,7 +6,7 @@ from webhook import router as webhook_router
 
 app = FastAPI()
 app.include_router(menu_router, prefix="/api/menu", tags=["menu"])
-app.include_router(webhook_router, prefix="/webhook", tags=["webhook"])
+app.include_router(webhook_router, prefix="/webhooks", tags=["webhooks"])
 
 @app.get("/")
 async def read_root():
