@@ -57,10 +57,15 @@ class WebhookEvent(BaseModel):
     eventType: str
     data: WebhookData
 
+class WebhookResponse(BaseModel):
+    status: Literal["OK", "ERROR"]
+    message: str | None = None
+    data: dict | None = None
+    slots: dict | None = None
 
 router = APIRouter()
 
-async def do_http_call(action: HttpAction, params: dict):
+async def do_http_call(action: HttpAction, params: dict) -> WebhookResponse:
     # Do http call here
     url = pystache.render(action.url, params)
 
@@ -73,9 +78,8 @@ async def do_http_call(action: HttpAction, params: dict):
         case "GET":
             response = await httpx_client.get(url, headers=headers)
             response.raise_for_status()
-            return {
-                action.result_slots: response.json()
-            }
+            
+            return WebhookResponse(status="OK", data=response.json())
 
         case "POST":
             match action.body:
@@ -86,19 +90,19 @@ async def do_http_call(action: HttpAction, params: dict):
                 case dict():
                     response = await httpx_client.post(url, headers=headers, json=body)
             response.raise_for_status()
-            return {
-                action.result_slots: response.json()
-            }
+            return WebhookResponse(status="OK", data=response.json())
 
         case _:
-            response = {}
-    return action
+            pass
+    return WebhookResponse(status="ERROR")
 
 @router.post(path="/")
-async def webhooks(event: WebhookEvent):
+async def webhooks(event: WebhookEvent) -> WebhookResponse:
     match event:
         case ActionWebhookData():
             match event.action:
                 case HttpAction():
                     return do_http_call(action=event.action, params=event.params)
+    
+    return WebhookResponse(status="ERROR")
     
