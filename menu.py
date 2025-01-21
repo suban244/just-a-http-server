@@ -23,6 +23,7 @@ async def get_item(item: str):
 
 @router.post("/order")
 async def order(item: str):
+    item = item.lower()
     for i in menu:
         if i["item"] == item:
             return {"order": item, "price": i["price"], "payment": "cash on delivery"}
